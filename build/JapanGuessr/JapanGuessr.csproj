@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\bin\Debug\</OutputPath>
-	<IntermediateOutputPath>..\..\obj\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\obj\Debug\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,7 +31,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\bin\Release\</OutputPath>
-	<IntermediateOutputPath>..\..\obj\Release</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\obj\Release</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -64,6 +64,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="IPictureManager.cs" />
     <Compile Include="Main.xaml.cs">
       <DependentUpon>Main.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -104,6 +105,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>rd "$(ProjectDir)obj" /S /Q</PostBuildEvent>
+    <PostBuildEvent>rd "$(ProjectDir)obj" /S /Q
+mkdir "$(TargetDir)\images"
+xcopy "$(ProjectDir)..\..\resources\app\images" "$(TargetDir)\images" /E</PostBuildEvent>
   </PropertyGroup>
 </Project>

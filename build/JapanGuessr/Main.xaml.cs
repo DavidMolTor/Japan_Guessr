@@ -8,7 +8,7 @@ Main.cs
 - Date: 08 - 12 - 2020
 - Version: 1.0
 
-Property of an otaku
+Property of Skeptic Productions
 */
 
 using System;
@@ -21,6 +21,6 @@ namespace JapanGuessr
     */
     public partial class App : Application
     {
-
+        
     }
 }

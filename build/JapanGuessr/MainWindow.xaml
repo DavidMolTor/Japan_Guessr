@@ -5,8 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:JapanGuessr"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        ResizeMode="CanMinimize"
+        Title="MainWindow" Height="600" Width="900" Background="{x:Null}" Foreground="{x:Null}">
     <Grid>
-        
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="#FF2B8F8F" Offset="0"/>
+                <GradientStop Color="#FF1D2F7E" Offset="0.7"/>
+                <GradientStop Color="#FF1D2F7E" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
     </Grid>
 </Window>
