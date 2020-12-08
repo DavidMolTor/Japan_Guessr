@@ -1,0 +1,5 @@
+//----------
+// Resources
+//----------
+
+ - Application resources folder.
