@@ -106,7 +106,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>rd "$(ProjectDir)obj" /S /Q
-mkdir "$(TargetDir)\images"
-xcopy "$(ProjectDir)..\..\resources\app\images" "$(TargetDir)\images" /E</PostBuildEvent>
+mkdir "$(TargetDir)images"
+xcopy "$(ProjectDir)..\..\resources\app\images" "$(TargetDir)images" /S /E /D</PostBuildEvent>
   </PropertyGroup>
 </Project>

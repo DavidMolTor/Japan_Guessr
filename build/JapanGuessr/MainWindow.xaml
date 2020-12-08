@@ -15,5 +15,7 @@
                 <GradientStop Color="#FF1D2F7E" Offset="1"/>
             </LinearGradientBrush>
         </Grid.Background>
+        <Image x:Name="imgPicture" HorizontalAlignment="Left" Height="340" Margin="10,10,0,0" VerticalAlignment="Top" Width="460" Stretch="Uniform"/>
+        <Button x:Name="buttonUpdate" Content="Update" HorizontalAlignment="Center" Margin="0,0,0,10" VerticalAlignment="Bottom" Width="120" Height="35" Click="ButtonUpdate_Click"/>
     </Grid>
 </Window>

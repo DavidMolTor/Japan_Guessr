@@ -13,6 +13,8 @@ Property of Skeptic Productions
 
 using System;
 using System.IO;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace JapanGuessr
 {
@@ -51,13 +53,19 @@ namespace JapanGuessr
         }
 
         /*
-        Returns the number of existing pictures
+        Returns a random picture as a bitmap
         */
-        public int GetPictureCount()
+        public ImageSource GetRandomPicture()
         {
+            //Get all the pictures from the images folder
             string[] sPictures = Directory.GetFiles("./images", "*.jpg");
 
-            return sPictures.Length;
+            //Generate a random number from the image count
+            Random rand = new Random();
+            int iRandom = rand.Next(sPictures.Length);
+
+            //Return the selected image
+            return new BitmapImage(new Uri(sPictures[iRandom], UriKind.Relative));
         }
     }
 }
