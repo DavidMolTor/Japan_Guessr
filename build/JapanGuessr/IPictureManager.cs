@@ -13,8 +13,9 @@ Property of Skeptic Productions
 
 using System;
 using System.IO;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+
+//Exif libraries
+using ExifLib;
 
 namespace JapanGuessr
 {
@@ -52,10 +53,13 @@ namespace JapanGuessr
             }
         }
 
+        //Selected picture variable
+        private string sFilePath = "";
+
         /*
-        Returns a random picture as a bitmap
+        Returns a random picture file path
         */
-        public ImageSource GetRandomPicture()
+        public string UpdatePicture()
         {
             //Get all the pictures from the images folder
             string[] sPictures = Directory.GetFiles("./images", "*.jpg");
@@ -64,8 +68,42 @@ namespace JapanGuessr
             Random rand = new Random();
             int iRandom = rand.Next(sPictures.Length);
 
-            //Return the selected image
-            return new BitmapImage(new Uri(sPictures[iRandom], UriKind.Relative));
+            //Set the picture file path
+            sFilePath = sPictures[iRandom];
+
+            //Return the selected picture
+            return sFilePath;
+        }
+
+        /*
+        Returns the location information for the selected picture
+        */
+        public bool GetImageGPS(out double[] dCoordinates)
+        {
+            //Initialize the coordinates vector
+            dCoordinates = new double[2];
+
+            //Initialize the EXIF reader
+            ExifReader exifReader = new ExifReader(sFilePath);
+
+            //Try getting the GPS information
+            bool bLatitudeOK    = exifReader.GetTagValue(ExifTags.GPSLatitude, out double[] dLatitude);
+            bool bLongitudeOK   = exifReader.GetTagValue(ExifTags.GPSLongitude, out double[] dLongitude);
+
+            //Check if there is any GPS information
+            if (bLatitudeOK && bLongitudeOK)
+            {
+
+                //Set the coordinates as sinlge double format
+                dCoordinates[0] = dLatitude[0] + dLatitude[1] / 60 + dLatitude[2] / 3600;
+                dCoordinates[1] = dLongitude[0] + dLongitude[1] / 60 + dLongitude[2] / 3600;
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

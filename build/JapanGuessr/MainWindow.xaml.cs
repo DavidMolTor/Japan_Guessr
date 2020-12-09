@@ -14,6 +14,7 @@ Property of Skeptic Productions
 using System;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace JapanGuessr
 {
@@ -25,9 +26,6 @@ namespace JapanGuessr
         public MainWindow()
         {
             InitializeComponent();
-
-            //Set an initial picture
-            UpdatePicture();
         }
 
         /*
@@ -35,7 +33,60 @@ namespace JapanGuessr
         */
         private void UpdatePicture()
         {
-            imgPicture.Source = IPictureManager.Instance.GetRandomPicture();
+            //Get a new image file path
+            string sFilePath = IPictureManager.Instance.UpdatePicture();
+
+            //Get the GPS information and check if it exists
+            if (IPictureManager.Instance.GetImageGPS(out double[] dCoordinates))
+            {
+                //Set the new image
+                SetImage(sFilePath);
+
+                //TODO: Wait for user input
+            }
+            else if (checkSkipGPS.IsChecked.Value)
+            {
+                UpdatePicture();
+            }
+            else
+            {
+                //Set the new image
+                SetImage(sFilePath);
+
+                //Ask if the user want to add the information
+                MessageBoxResult iResult = MessageBox.Show(Properties.Resources.Main_textSetInfoGPS, "JapanGuessr", MessageBoxButton.YesNo);
+                switch (iResult)
+                {
+                    case MessageBoxResult.Yes:
+                        //TODO: Set selected GPS information
+                        break;
+                    case MessageBoxResult.No:
+                        //Set a new picture
+                        UpdatePicture();
+                        break;
+                }
+            }
+        }
+
+        /*
+        Sets the picture to show from a file path
+        */
+        private void SetImage(string sFilePath)
+        {
+            //Initialize the new image as a bitmap
+            BitmapImage bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(sFilePath, UriKind.Relative);
+            bitmap.EndInit();
+
+            //Set the grid background color
+            gridPicture.Background = new SolidColorBrush(Colors.Black);
+
+            //Set the map visibility
+            mapPicture.Visibility = Visibility.Visible;
+
+            //Set the new image
+            imgPicture.Source = bitmap;
         }
 
         /*

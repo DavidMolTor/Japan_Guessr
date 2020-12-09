@@ -40,8 +40,15 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ExifLib, Version=1.7.0.0, Culture=neutral, PublicKeyToken=30284005913968db, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExifLib.1.7.0.0\lib\net45\ExifLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Maps.MapControl.WPF">
+      <HintPath>..\..\lib\Bing Maps\Microsoft.Maps.MapControl.WPF.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -92,21 +99,26 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Main.config" />
+    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="icon.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\default.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>rd "$(ProjectDir)obj" /S /Q
-mkdir "$(TargetDir)images"
-xcopy "$(ProjectDir)..\..\resources\app\images" "$(TargetDir)images" /S /E /D</PostBuildEvent>
+    <PostBuildEvent>rd "$(ProjectDir)obj" /S /Q &gt;NUL
+mkdir "$(TargetDir)images" &gt;NUL
+xcopy "$(ProjectDir)..\..\resources\app\images" "$(TargetDir)images" /S /E /D &gt;NUL
+Call "$(ProjectDir)Tools\PostBuild.cmd" $(ConfigurationName) $(ProjectDir) $(OutDir)</PostBuildEvent>
   </PropertyGroup>
 </Project>
