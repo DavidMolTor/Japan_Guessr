@@ -135,7 +135,6 @@ namespace JapanGuessr
                         }
                         else
                         {
-
                             //Get the current location
                             Location location = mapPicture.ViewportPointToLocation(e.GetPosition(mapPicture));
 
@@ -152,7 +151,8 @@ namespace JapanGuessr
                             //Get the distance between the picture location and the selected point
                             double dDistance = currentCoords.GetDistanceTo(new GeoCoordinate(location.Latitude, location.Longitude));
 
-                            Console.WriteLine("Distance: {0:0}m", dDistance);
+                            //Show the distance to the target
+                            MessageBox.Show(Properties.Resources.Main_textDistanceToTarget.Replace("[DIST]", dDistance.ToString("0")), "JapanGuessr", MessageBoxButton.OK);
                         }
                     }
                     break;

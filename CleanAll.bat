@@ -1,3 +1,5 @@
+RMDIR "./install/JapanGuessr" /S /Q
+
 RMDIR "./bin/Debug" /S /Q
 RMDIR "./bin/Release" /S /Q
 

@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Main_textDistanceToTarget" xml:space="preserve">
+    <value>Distancia al objetivo: [DIST] metros</value>
+  </data>
   <data name="Main_textSetInfoGPS" xml:space="preserve">
     <value>No se ha encontrado información de GPS en la imagen.
 ¿Te gustaría añadirla?</value>

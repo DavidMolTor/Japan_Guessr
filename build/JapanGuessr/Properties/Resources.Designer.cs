@@ -71,6 +71,15 @@ namespace JapanGuessr.Properties {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a Distancia al objetivo: [DIST] metros.
+        /// </summary>
+        internal static string Main_textDistanceToTarget {
+            get {
+                return ResourceManager.GetString("Main_textDistanceToTarget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a No se ha encontrado información de GPS en la imagen.
         ///¿Te gustaría añadirla?.
         /// </summary>
