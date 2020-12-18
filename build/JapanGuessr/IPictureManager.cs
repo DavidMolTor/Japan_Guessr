@@ -13,6 +13,7 @@ Property of Skeptic Productions
 
 using System;
 using System.IO;
+using System.Device.Location;
 
 //Exif libraries
 using ExifLib;
@@ -78,30 +79,31 @@ namespace JapanGuessr
         /*
         Returns the location information for the selected picture
         */
-        public bool GetImageGPS(out double[] dCoordinates)
+        public bool GetImageGPS(out GeoCoordinate coords)
         {
-            //Initialize the coordinates vector
-            dCoordinates = new double[2];
-
             //Initialize the EXIF reader
             ExifReader exifReader = new ExifReader(sFilePath);
 
             //Try getting the GPS information
-            bool bLatitudeOK    = exifReader.GetTagValue(ExifTags.GPSLatitude, out double[] dLatitude);
-            bool bLongitudeOK   = exifReader.GetTagValue(ExifTags.GPSLongitude, out double[] dLongitude);
+            bool bLatitudeOK        = exifReader.GetTagValue(ExifTags.GPSLatitude, out double[] dLatitudeRaw);
+            bool bLatitudeRefOK     = exifReader.GetTagValue(ExifTags.GPSLatitudeRef, out string sLatitudeRef);
+            bool bLongitudeOK       = exifReader.GetTagValue(ExifTags.GPSLongitude, out double[] dLongitudeRaw);
+            bool bLongitudeRefOK    = exifReader.GetTagValue(ExifTags.GPSLongitudeRef, out string sLongitudeRef);
 
             //Check if there is any GPS information
-            if (bLatitudeOK && bLongitudeOK)
+            if (bLatitudeOK && bLatitudeRefOK && bLongitudeOK && bLongitudeRefOK)
             {
 
                 //Set the coordinates as sinlge double format
-                dCoordinates[0] = dLatitude[0] + dLatitude[1] / 60 + dLatitude[2] / 3600;
-                dCoordinates[1] = dLongitude[0] + dLongitude[1] / 60 + dLongitude[2] / 3600;
+                double dLatitude    = (dLatitudeRaw[0] + dLatitudeRaw[1] / 60 + dLatitudeRaw[2] / 3600) * (sLatitudeRef == "S" ? -1 : 1);
+                double dLongitude   = (dLongitudeRaw[0] + dLongitudeRaw[1] / 60 + dLongitudeRaw[2] / 3600) * (sLongitudeRef == "W" ? -1 : 1);
 
+                coords = new GeoCoordinate(dLatitude, dLongitude);
                 return true;
             }
             else
             {
+                coords = null;
                 return false;
             }
         }

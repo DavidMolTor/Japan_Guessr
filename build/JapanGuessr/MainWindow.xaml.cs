@@ -13,8 +13,13 @@ Property of Skeptic Productions
 
 using System;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Device.Location;
 using System.Windows.Media.Imaging;
+
+//Map libraries
+using Microsoft.Maps.MapControl.WPF;
 
 namespace JapanGuessr
 {
@@ -28,6 +33,12 @@ namespace JapanGuessr
             InitializeComponent();
         }
 
+        //Currently selected coordinates
+        private GeoCoordinate currentCoords;
+
+        //Current selection mode
+        private bool bSetCoords = false;
+
         /*
         Updated the picture shown
         */
@@ -37,7 +48,7 @@ namespace JapanGuessr
             string sFilePath = IPictureManager.Instance.UpdatePicture();
 
             //Get the GPS information and check if it exists
-            if (IPictureManager.Instance.GetImageGPS(out double[] dCoordinates))
+            if (IPictureManager.Instance.GetImageGPS(out currentCoords))
             {
                 //Set the new image
                 SetImage(sFilePath);
@@ -56,7 +67,8 @@ namespace JapanGuessr
                 switch (iResult)
                 {
                     case MessageBoxResult.Yes:
-                        //TODO: Set selected GPS information
+                        //Set the coordinates selection flag
+                        bSetCoords = true;
                         break;
                     case MessageBoxResult.No:
                         //Set a new picture
@@ -98,6 +110,64 @@ namespace JapanGuessr
         private void ButtonUpdate_Click(object sender, RoutedEventArgs e)
         {
             UpdatePicture();
+        }
+
+        //Mouse event objects
+        private int iMoveCount = 0;
+
+        /*
+        Left mouse button event handler
+        */
+        private void MapPicture_MouseLeftEvent(object sender, MouseButtonEventArgs e)
+        {
+            switch (e.ButtonState)
+            {
+                case MouseButtonState.Pressed:
+                    iMoveCount = 0;
+                    break;
+                case MouseButtonState.Released:
+                    if (iMoveCount < 3)
+                    {
+                        //Check the coordinates setting flag
+                        if (bSetCoords)
+                        {
+                            //TODO: Save new coordinates information for the current picture
+                        }
+                        else
+                        {
+
+                            //Get the current location
+                            Location location = mapPicture.ViewportPointToLocation(e.GetPosition(mapPicture));
+
+                            //Clear all map childrens
+                            mapPicture.Children.Clear();
+
+                            //Add a push pin to the selected location
+                            Pushpin pushPin = new Pushpin()
+                            {
+                                Location = location
+                            };
+                            mapPicture.Children.Add(pushPin);
+
+                            //Get the distance between the picture location and the selected point
+                            double dDistance = currentCoords.GetDistanceTo(new GeoCoordinate(location.Latitude, location.Longitude));
+
+                            Console.WriteLine("Distance: {0:0}m", dDistance);
+                        }
+                    }
+                    break;
+            }
+        }
+
+        /*
+        Mouse moved event handler
+        */
+        private void MapPicture_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                iMoveCount++;
+            }
         }
     }
 }
