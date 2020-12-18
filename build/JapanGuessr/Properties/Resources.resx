@@ -118,7 +118,8 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Main_textSetInfoGPS" xml:space="preserve">
-    <value>No se ha encontrado información de GPS en la imagen.\n¿Te gustaría añadirla?</value>
+    <value>No se ha encontrado información de GPS en la imagen.
+¿Te gustaría añadirla?</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="_default" type="System.Resources.ResXFileRef, System.Windows.Forms">

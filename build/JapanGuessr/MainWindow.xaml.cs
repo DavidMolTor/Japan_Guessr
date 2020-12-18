@@ -41,8 +41,6 @@ namespace JapanGuessr
             {
                 //Set the new image
                 SetImage(sFilePath);
-
-                //TODO: Wait for user input
             }
             else if (checkSkipGPS.IsChecked.Value)
             {
@@ -75,9 +73,14 @@ namespace JapanGuessr
         {
             //Initialize the new image as a bitmap
             BitmapImage bitmap = new BitmapImage();
+
+            //Set the bitmap source
             bitmap.BeginInit();
             bitmap.UriSource = new Uri(sFilePath, UriKind.Relative);
+
+            //Release the bitmap for it to be accessed
             bitmap.EndInit();
+            bitmap.Freeze();
 
             //Set the grid background color
             gridPicture.Background = new SolidColorBrush(Colors.Black);

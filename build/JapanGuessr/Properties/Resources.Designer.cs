@@ -71,7 +71,8 @@ namespace JapanGuessr.Properties {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a No se ha encontrado información de GPS en la imagen.\n¿Te gustaría añadirla?.
+        ///   Busca una cadena traducida similar a No se ha encontrado información de GPS en la imagen.
+        ///¿Te gustaría añadirla?.
         /// </summary>
         internal static string Main_textSetInfoGPS {
             get {
