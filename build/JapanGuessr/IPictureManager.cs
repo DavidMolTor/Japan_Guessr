@@ -13,7 +13,9 @@ Property of Skeptic Productions
 
 using System;
 using System.IO;
+using System.Windows;
 using System.Device.Location;
+using System.Collections.Generic;
 
 //Exif libraries
 using ExifLib;
@@ -54,26 +56,58 @@ namespace JapanGuessr
             }
         }
 
+        //Pictures found variable
+        private string[] sPictures  = null;
+        public bool bDirectorySet   = false;
+
         //Selected picture variable
-        private string sFilePath = "";
+        private string sCurrentFilePath = "";
+
+        /*
+        Sets the pictures found in the selected directory
+        */
+        public void FindPictures(string sSearchPath)
+        {
+            //Check if the selected folder exists
+            if (Directory.Exists(sSearchPath))
+            {
+                //Set a temporary files vector
+                List<string> sFilesFound = new List<string>();
+
+                //Set the image filters to look for
+                string[] sFilters = new string[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "svg" };
+
+                //Search all image files
+                for (int i = 0; i < sFilters.Length; i++)
+                {
+                    sFilesFound.AddRange(Directory.GetFiles(sSearchPath, string.Format("*.{0}", sFilters[i]), SearchOption.AllDirectories));
+                }
+
+                //Set the pictures array
+                sPictures = sFilesFound.ToArray();
+                bDirectorySet = true;
+            }
+            else
+            {
+                //Show the directory not found dialog
+                MessageBox.Show(Properties.Resources.Main_textDirectoryError, "JapanGuessr", MessageBoxButton.OK);
+            }
+        }
 
         /*
         Returns a random picture file path
         */
-        public string UpdatePicture()
+        public string GetRandomPicture()
         {
-            //Get all the pictures from the images folder
-            string[] sPictures = Directory.GetFiles("./images", "*.jpg");
-
             //Generate a random number from the image count
             Random rand = new Random();
             int iRandom = rand.Next(sPictures.Length);
 
             //Set the picture file path
-            sFilePath = sPictures[iRandom];
+            sCurrentFilePath = sPictures[iRandom];
 
             //Return the selected picture
-            return sFilePath;
+            return sCurrentFilePath;
         }
 
         /*
@@ -82,7 +116,7 @@ namespace JapanGuessr
         public bool GetImageGPS(out GeoCoordinate coords)
         {
             //Initialize the EXIF reader
-            ExifReader exifReader = new ExifReader(sFilePath);
+            ExifReader exifReader = new ExifReader(sCurrentFilePath);
 
             //Try getting the GPS information
             bool bLatitudeOK        = exifReader.GetTagValue(ExifTags.GPSLatitude, out double[] dLatitudeRaw);

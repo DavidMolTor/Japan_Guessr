@@ -60,7 +60,7 @@ namespace JapanGuessr
         private void UpdatePicture()
         {
             //Get a new image file path
-            string sFilePath = IPictureManager.Instance.UpdatePicture();
+            string sFilePath = IPictureManager.Instance.GetRandomPicture();
 
             //Get the GPS information and check if it exists
             bool bInfo = IPictureManager.Instance.GetImageGPS(out coordsPicture);
@@ -73,7 +73,7 @@ namespace JapanGuessr
                     //Check if the GPS information has been found
                     if (!bInfo)
                     {
-                        //Ask if the user want to add the information
+                        //Ask if the user wants to add the information
                         MessageBoxResult iResult = MessageBox.Show(Properties.Resources.Main_textSetInfoGPS, "JapanGuessr", MessageBoxButton.YesNo);
                         switch (iResult)
                         {

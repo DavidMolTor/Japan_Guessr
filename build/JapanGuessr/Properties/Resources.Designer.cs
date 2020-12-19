@@ -71,6 +71,16 @@ namespace JapanGuessr.Properties {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a El directorio configurado no se ha encontrado.
+        ///Elija un directorio válido..
+        /// </summary>
+        internal static string Main_textDirectoryError {
+            get {
+                return ResourceManager.GetString("Main_textDirectoryError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a Distancia al objetivo: [DIST] metros.
         /// </summary>
         internal static string Main_textDistanceToTarget {
@@ -86,6 +96,16 @@ namespace JapanGuessr.Properties {
         internal static string Main_textSetInfoGPS {
             get {
                 return ResourceManager.GetString("Main_textSetInfoGPS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a No se ha configurado el directorio de imágenes.
+        ///¿Quieres seleccionar un directorio diferente al predeterminado?.
+        /// </summary>
+        internal static string Main_textSetPicturesPath {
+            get {
+                return ResourceManager.GetString("Main_textSetPicturesPath", resourceCulture);
             }
         }
     }
