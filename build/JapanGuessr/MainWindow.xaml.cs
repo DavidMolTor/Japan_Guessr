@@ -34,12 +34,12 @@ namespace JapanGuessr
         */
         private void HandleModeSelected(GameMode iMode)
         {
-            //Initialize the selection panel
-            panelSelection.SetGameMode(iMode);
-
             //Hide the start menu and show the selection panel
             panelSelection.Visibility = Visibility.Visible;
             panelStartMenu.Visibility = Visibility.Hidden;
+
+            //Initialize the selection panel
+            panelSelection.SetGameMode(iMode);
         }
     }
 }

@@ -40,12 +40,12 @@ namespace JapanGuessr
         /*
         Game mode selection setter
         */
-        public void SetGameMode (GameMode iSelectedMode)
+        public void SetGameMode(GameMode iSelectedMode)
         {
             //Set the game mode
             iMode = iSelectedMode;
 
-            //Update the first picture
+            //Set the first picture
             UpdatePicture();
         }
 
@@ -63,12 +63,12 @@ namespace JapanGuessr
             string sFilePath = IPictureManager.Instance.GetRandomPicture();
 
             //Get the GPS information and check if it exists
-            bool bInfo = IPictureManager.Instance.GetImageGPS(out coordsPicture);
+            bool bInfo = IPictureManager.Instance.GetImageInfo(out coordsPicture, out Rotation iRotation);
             switch (iMode)
             {
                 case GameMode.Normal:
                     //Set the new image
-                    SetImage(sFilePath);
+                    SetImage(sFilePath, iRotation);
 
                     //Check if the GPS information has been found
                     if (!bInfo)
@@ -93,7 +93,7 @@ namespace JapanGuessr
                     if (bInfo)
                     {
                         //Set the new image
-                        SetImage(sFilePath);
+                        SetImage(sFilePath, iRotation);
                     }
                     else
                     {
@@ -111,7 +111,7 @@ namespace JapanGuessr
                     else
                     {
                         //Set the new image
-                        SetImage(sFilePath);
+                        SetImage(sFilePath, iRotation);
                     }
                     break;
             }
@@ -120,7 +120,7 @@ namespace JapanGuessr
         /*
         Sets the picture to show from a file path
         */
-        private void SetImage(string sFilePath)
+        private void SetImage(string sFilePath, Rotation iRotation)
         {
             //Initialize the new image as a bitmap
             BitmapImage bitmap = new BitmapImage();
@@ -133,6 +133,32 @@ namespace JapanGuessr
             bitmap.EndInit();
             bitmap.Freeze();
 
+            //Initialize a transformed bitmap for rotation
+            TransformedBitmap transBitmap = new TransformedBitmap();
+            transBitmap.BeginInit();
+            transBitmap.Source = bitmap;
+
+            //Set the orientation of the transformed bitmap
+            switch (iRotation)
+            {
+                case Rotation.Left:
+                    transBitmap.Transform = new RotateTransform(270);
+                    break;
+                case Rotation.Right:
+                    transBitmap.Transform = new RotateTransform(90);
+                    break;
+                case Rotation.Full:
+                    transBitmap.Transform = new RotateTransform(180);
+                    break;
+                case Rotation.None:
+                    transBitmap.Transform = new RotateTransform(0);
+                    break;
+            }
+
+            //Release the transformed bitmap for it to be accessed
+            transBitmap.EndInit();
+            transBitmap.Freeze();
+
             //Set the grid background color
             gridPicture.Background = new SolidColorBrush(Colors.Black);
 
@@ -140,7 +166,7 @@ namespace JapanGuessr
             mapPicture.Visibility = Visibility.Visible;
 
             //Set the new image
-            imgPicture.Source = bitmap;
+            imgPicture.Source = transBitmap;
         }
 
         /*

@@ -111,9 +111,9 @@ namespace JapanGuessr
         }
 
         /*
-        Returns the location information for the selected picture
+        Returns the location and orientation information for the selected picture
         */
-        public bool GetImageGPS(out GeoCoordinate coords)
+        public bool GetImageInfo(out GeoCoordinate coords, out Rotation iRotation)
         {
             //Initialize the EXIF reader
             ExifReader exifReader = new ExifReader(sCurrentFilePath);
@@ -123,6 +123,30 @@ namespace JapanGuessr
             bool bLatitudeRefOK     = exifReader.GetTagValue(ExifTags.GPSLatitudeRef, out string sLatitudeRef);
             bool bLongitudeOK       = exifReader.GetTagValue(ExifTags.GPSLongitude, out double[] dLongitudeRaw);
             bool bLongitudeRefOK    = exifReader.GetTagValue(ExifTags.GPSLongitudeRef, out string sLongitudeRef);
+
+            //Try getting the orientation information
+            if (exifReader.GetTagValue(ExifTags.Orientation, out ushort iOrientation))
+            {
+                switch (iOrientation)
+                {
+                    case 6:
+                        iRotation = Rotation.Right;
+                        break;
+                    case 3:
+                        iRotation = Rotation.Full;
+                        break;
+                    case 8:
+                        iRotation = Rotation.Left;
+                        break;
+                    default:
+                        iRotation = Rotation.None;
+                        break;
+                }
+            }
+            else
+            {
+                iRotation = Rotation.None;
+            }
 
             //Check if there is any GPS information
             if (bLatitudeOK && bLatitudeRefOK && bLongitudeOK && bLongitudeRefOK)
@@ -141,5 +165,16 @@ namespace JapanGuessr
                 return false;
             }
         }
+    }
+
+    /*
+    Rotation enumeration
+    */
+    public enum Rotation
+    {
+        None    = 0,
+        Left    = 1,
+        Right   = 2,
+        Full    = 3
     }
 }
