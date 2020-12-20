@@ -18,6 +18,7 @@ using System.Windows.Media;
 using System.Device.Location;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Animation;
 
 //Map libraries
 using Microsoft.Maps.MapControl.WPF;
@@ -32,6 +33,65 @@ namespace JapanGuessr
         public PanelSelection()
         {
             InitializeComponent();
+
+            //Initialize all animation objects
+            InitializeAnimations();
+        }
+
+        /*
+        Initializes all object animations
+        */
+        private void InitializeAnimations()
+        {
+            //Initialize the width upscaling animation
+            animationWidthUp = new DoubleAnimation()
+            {
+                From        = 180,
+                To          = 450,
+                Duration    = new Duration(TimeSpan.FromMilliseconds(200))
+            };
+            Storyboard.SetTargetName(animationWidthUp, mapPicture.Name);
+            Storyboard.SetTargetProperty(animationWidthUp, new PropertyPath(WidthProperty));
+
+            //Initialize the width upscaling animation
+            animationHeightUp  = new DoubleAnimation()
+            {
+                From        = 120,
+                To          = 300,
+                Duration    = new Duration(TimeSpan.FromMilliseconds(200))
+            };
+            Storyboard.SetTargetName(animationHeightUp, mapPicture.Name);
+            Storyboard.SetTargetProperty(animationHeightUp, new PropertyPath(HeightProperty));
+
+            //Initialize the downscaling storyboard
+            storyboardMapUp = new Storyboard();
+            storyboardMapUp.Children.Add(animationWidthUp);
+            storyboardMapUp.Children.Add(animationHeightUp);
+
+            //Initialize the width downscaling animation
+            animationWidthDown = new DoubleAnimation()
+            {
+                From        = 450,
+                To          = 180,
+                Duration    = new Duration(TimeSpan.FromMilliseconds(200))
+            };
+            Storyboard.SetTargetName(animationWidthDown, mapPicture.Name);
+            Storyboard.SetTargetProperty(animationWidthDown, new PropertyPath(WidthProperty));
+
+            //Initialize the width downscaling animation
+            animationHeightDown = new DoubleAnimation()
+            {
+                From        = 300,
+                To          = 120,
+                Duration    = new Duration(TimeSpan.FromMilliseconds(200))
+            };
+            Storyboard.SetTargetName(animationHeightDown, mapPicture.Name);
+            Storyboard.SetTargetProperty(animationHeightDown, new PropertyPath(HeightProperty));
+
+            //Initialize the downscaling storyboard
+            storyboardMapDown = new Storyboard();
+            storyboardMapDown.Children.Add(animationWidthDown);
+            storyboardMapDown.Children.Add(animationHeightDown);
         }
 
         //Currently selected game mode
@@ -170,7 +230,7 @@ namespace JapanGuessr
         }
 
         /*
-        Button update click event handler
+        Button select click event handler
         */
         private void ButtonSelect_Click(object sender, RoutedEventArgs e)
         {
@@ -193,7 +253,7 @@ namespace JapanGuessr
                         dDistance = coordsPicture.GetDistanceTo(coordsSelected);
 
                         //Show the distance to the target
-                        MessageBox.Show(Properties.Resources.Main_textDistanceToTarget.Replace("[DIST]", dDistance.ToString("0")), "JapanGuessr", MessageBoxButton.OK);
+                        ShowDistance(dDistance);
                     }
                     break;
                 case GameMode.OnlyGPS:
@@ -201,7 +261,7 @@ namespace JapanGuessr
                     dDistance = coordsPicture.GetDistanceTo(coordsSelected);
 
                     //Show the distance to the target
-                    MessageBox.Show(Properties.Resources.Main_textDistanceToTarget.Replace("[DIST]", dDistance.ToString("0")), "JapanGuessr", MessageBoxButton.OK);
+                    ShowDistance(dDistance);
                     break;
                 case GameMode.AddGPS:
                     //TODO: Save the coordinates
@@ -215,11 +275,31 @@ namespace JapanGuessr
             UpdatePicture();
         }
 
+        /*
+        Shows the distance to target dialog
+        */
+        private void ShowDistance(double dDistance)
+        {
+            //Check if the distance format to be shown
+            string sDistance;
+            if (dDistance > 1000)
+            {
+                sDistance = (dDistance / 1000).ToString("0.0") + " kilómetros";
+            }
+            else
+            {
+                sDistance = dDistance.ToString("0") + " metros";
+            }
+
+            //Show the distance to the target dialog
+            MessageBox.Show(Properties.Resources.Main_textDistanceToTarget.Replace("[DIST]", sDistance), "JapanGuessr", MessageBoxButton.OK);
+        }
+
         //Mouse event objects
         private int iMoveCount = 0;
 
         /*
-        Left mouse button event handler
+        Left mouse button event handler for map object
         */
         private void MapPicture_MouseLeftEvent(object sender, MouseButtonEventArgs e)
         {
@@ -250,7 +330,7 @@ namespace JapanGuessr
         }
 
         /*
-        Mouse moved event handler
+        Mouse moved event handler for map object
         */
         private void MapPicture_MouseMove(object sender, MouseEventArgs e)
         {
@@ -258,6 +338,34 @@ namespace JapanGuessr
             {
                 iMoveCount++;
             }
+        }
+
+        //Map animation objects for upscaling
+        DoubleAnimation animationWidthUp;
+        DoubleAnimation animationHeightUp;
+        Storyboard storyboardMapUp;
+
+        //Map animation objects for downscaling
+        DoubleAnimation animationWidthDown;
+        DoubleAnimation animationHeightDown;
+        Storyboard storyboardMapDown;
+
+        /*
+        Mouse enter event handler for map object
+        */
+        private void MapPicture_MouseEnter(object sender, MouseEventArgs e)
+        {
+            //Start the upscaling animation
+            storyboardMapUp.Begin(mapPicture);
+        }
+
+        /*
+        Mouse leave event handler for map object
+        */
+        private void MapPicture_MouseLeave(object sender, MouseEventArgs e)
+        {
+            //Start the downscaling animation
+            storyboardMapDown.Begin(mapPicture);
         }
     }
 

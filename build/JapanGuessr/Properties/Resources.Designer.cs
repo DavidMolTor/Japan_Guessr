@@ -81,7 +81,7 @@ namespace JapanGuessr.Properties {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a Distancia al objetivo: [DIST] metros.
+        ///   Busca una cadena traducida similar a Distancia al objetivo: [DIST].
         /// </summary>
         internal static string Main_textDistanceToTarget {
             get {

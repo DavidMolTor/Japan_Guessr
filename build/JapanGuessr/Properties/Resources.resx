@@ -122,7 +122,7 @@
 Elija un directorio válido.</value>
   </data>
   <data name="Main_textDistanceToTarget" xml:space="preserve">
-    <value>Distancia al objetivo: [DIST] metros</value>
+    <value>Distancia al objetivo: [DIST]</value>
   </data>
   <data name="Main_textSetInfoGPS" xml:space="preserve">
     <value>No se ha encontrado información de GPS en la imagen.
