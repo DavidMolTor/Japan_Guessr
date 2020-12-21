@@ -119,6 +119,9 @@ namespace JapanGuessr
         */
         private void UpdatePicture()
         {
+            //Disable the selection button
+            buttonSelect.IsEnabled = false;
+
             //Get a new image file path
             string sFilePath = IPictureManager.Instance.GetRandomPicture();
 
@@ -324,6 +327,9 @@ namespace JapanGuessr
 
                         //Save the selected coordinates
                         coordsSelected = new GeoCoordinate(location.Latitude, location.Longitude);
+
+                        //Enable the selection button
+                        buttonSelect.IsEnabled = true;
                     }
                     break;
             }

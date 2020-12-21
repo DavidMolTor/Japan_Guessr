@@ -51,33 +51,28 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Grid>
-        <Grid.Background>
-            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                <GradientStop Color="#FF2B8F8F" Offset="0"/>
-                <GradientStop Color="#FF1D2F7E" Offset="0.7"/>
-                <GradientStop Color="#FF1D2F7E" Offset="1"/>
-            </LinearGradientBrush>
-        </Grid.Background>
-        <Label Content="JAPAN GUESSR" HorizontalAlignment="Center" Margin="0,100,0,0" VerticalAlignment="Top" FontFamily="Orbitron" FontSize="72" Background="{x:Null}" Foreground="Gainsboro"/>
-        <Button x:Name="buttonNormal" Style="{StaticResource HoverButton}" Width="300" Foreground="White" Height="90" Click="Button_Click" RenderTransformOrigin="0.5,0.5" Background="#00000000" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,80">
-            <Grid Background="#FF323232" Width="300" Height="90">
+    <Grid Height="800" VerticalAlignment="Center" Width="1200" HorizontalAlignment="Center">
+        <Grid Height="800" VerticalAlignment="Center" Width="1200" HorizontalAlignment="Center">
+            <Image Height="800" Margin="0" Width="1200" Stretch="Uniform" Source="Resources/background.png"/>
+        </Grid>
+        <Button x:Name="buttonNormal" Style="{StaticResource HoverButton}" Width="260" Foreground="White" Height="90" Click="Button_Click" RenderTransformOrigin="0.5,0.5" Background="#00000000" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,370,540,0">
+            <Grid Background="#FF323232" Width="260" Height="90">
                 <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="ESTÁNDAR" FontSize="32" Margin="0" FontFamily="Orbitron" Foreground="Gainsboro" />
             </Grid>
         </Button>
-        <Button x:Name="buttonOnlyGPS" Style="{StaticResource HoverButton}" Width="300" Foreground="White" Height="90" Click="Button_Click" RenderTransformOrigin="0.5,0.5" Background="#00000000" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,220,0,0">
-            <Grid Background="#FF323232" Width="300" Height="90">
+        <Button x:Name="buttonOnlyGPS" Style="{StaticResource HoverButton}" Width="260" Foreground="White" Height="90" Click="Button_Click" RenderTransformOrigin="0.5,0.5" Background="#00000000" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="80,370,0,0">
+            <Grid Background="#FF323232" Width="260" Height="90">
                 <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="SOLO GPS" FontSize="32" Margin="0" FontFamily="Orbitron" Foreground="Gainsboro" />
             </Grid>
         </Button>
-        <Button x:Name="buttonAddGPS" Style="{StaticResource HoverButton}" Width="300" Foreground="White" Height="90" Click="Button_Click" RenderTransformOrigin="0.5,0.5" Background="#00000000" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,520,0,0">
-            <Grid Background="#FF323232" Width="300" Height="90">
+        <Button x:Name="buttonAddGPS" Style="{StaticResource HoverButton}" Width="260" Foreground="White" Height="90" Click="Button_Click" RenderTransformOrigin="0.5,0.5" Background="#00000000" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="700,370,0,0">
+            <Grid Background="#FF323232" Width="260" Height="90">
                 <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="AÑADIR GPS" FontSize="32" Margin="0" FontFamily="Orbitron" Foreground="Gainsboro" />
             </Grid>
         </Button>
         <Button x:Name="buttonSelectPath" Style="{StaticResource HoverButton}" Width="260" Foreground="White" Height="60" Click="ButtonSelectPath_Click" RenderTransformOrigin="0.5,0.5" Background="#00000000" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,40,30">
             <Grid Background="#FF323232" Width="260" Height="60">
-                <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="ELEGIR CARTPETA" FontSize="20" Margin="0" FontFamily="Orbitron" Foreground="Gainsboro" />
+                <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="ELEGIR CARPETA" FontSize="20" Margin="0" FontFamily="Orbitron" Foreground="Gainsboro" />
             </Grid>
         </Button>
     </Grid>
