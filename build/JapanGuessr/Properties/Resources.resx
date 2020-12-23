@@ -128,6 +128,14 @@ Elija un directorio válido.</value>
   <data name="Main_textDistanceToTarget" xml:space="preserve">
     <value>Distancia al objetivo: [DIST]</value>
   </data>
+  <data name="Main_textNoPicturesLeft" xml:space="preserve">
+    <value>No quedan imágenes en la carpeta actual por procesar.
+Vuelva a iniciar el juego en el modo deseado.</value>
+  </data>
+  <data name="Main_textSelectLocation" xml:space="preserve">
+    <value>No hay ninguna ubicación seleccionada.
+Por favor, seleccione una ubicación antes de continuar.</value>
+  </data>
   <data name="Main_textSetInfoGPS" xml:space="preserve">
     <value>No se ha encontrado información de GPS en la imagen.
 ¿Te gustaría añadirla?</value>

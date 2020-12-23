@@ -26,20 +26,24 @@ namespace JapanGuessr
         public PanelStartMenu()
         {
             InitializeComponent();
+
+            //Get the application configuration file
+            configMap = new ExeConfigurationFileMap
+            {
+                ExeConfigFilename = AppDomain.CurrentDomain.FriendlyName + ".config"
+            };
+            config = ConfigurationManager.OpenMappedExeConfiguration(configMap, ConfigurationUserLevel.None);
         }
+
+        //Configuration map objects
+        ExeConfigurationFileMap configMap;
+        Configuration config;
 
         /*
         Loaded event handler for the start menu panel
         */
         private void StartMenu_Loaded(object sender, RoutedEventArgs e)
         {
-            //Get the application configuration file
-            ExeConfigurationFileMap configMap = new ExeConfigurationFileMap
-            {
-                ExeConfigFilename = AppDomain.CurrentDomain.FriendlyName + ".config"
-            };
-            Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configMap, ConfigurationUserLevel.None);
-
             //Check if a pictures path has been selected
             string sPicturesPath = config.AppSettings.Settings["PicturesPath"].Value;
             if (sPicturesPath == "N/D")
@@ -73,9 +77,6 @@ namespace JapanGuessr
                 config.AppSettings.SectionInformation.ForceSave = true;
                 config.Save(ConfigurationSaveMode.Full);
             }
-
-            //Set the pictures
-            IPictureManager.Instance.FindPictures(sPicturesPath);
         }
 
         //Selection event for main window
@@ -87,8 +88,8 @@ namespace JapanGuessr
         */
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            //Check if the pictures directory has been set
-            if (IPictureManager.Instance.bDirectorySet)
+            //Set the pictures directory
+            if (IPictureManager.Instance.FindPictures(config.AppSettings.Settings["PicturesPath"].Value))
             {
                 //Send the selected game mode event
                 GameMode iMode = (GameMode)Enum.Parse(typeof(GameMode), ((Button)sender).Name.Replace("button", ""));

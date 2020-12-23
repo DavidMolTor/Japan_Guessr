@@ -25,8 +25,11 @@ namespace JapanGuessr
         {
             InitializeComponent();
 
-            //Bind the mode selection to this class
+            //Bind the mode selection event to this class
             panelStartMenu.ModeSelectedEvent += HandleModeSelected;
+
+            //Bind the return to start panel event to this class
+            panelSelection.ReturnToStartEvent += ReturnToStart;
         }
 
         /*
@@ -40,6 +43,17 @@ namespace JapanGuessr
 
             //Initialize the selection panel
             panelSelection.SetGameMode(iMode);
+        }
+
+
+        /*
+        Return to start panel event handler
+        */
+        private void ReturnToStart()
+        {
+            //Hide the selection panel and show the start menu
+            panelStartMenu.Visibility = Visibility.Visible;
+            panelSelection.Visibility = Visibility.Hidden;
         }
     }
 }

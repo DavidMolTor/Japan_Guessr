@@ -94,6 +94,10 @@ namespace JapanGuessr
             storyboardMapDown.Children.Add(animationHeightDown);
         }
 
+        //Panel back event for main window
+        public delegate void ReturnToStart();
+        public event ReturnToStart ReturnToStartEvent;
+
         //Currently selected game mode
         private GameMode iMode;
 
@@ -125,58 +129,70 @@ namespace JapanGuessr
             //Get a new image file path
             string sFilePath = IPictureManager.Instance.GetRandomPicture();
 
-            //Get the GPS information and check if it exists
-            bool bInfo = IPictureManager.Instance.GetImageInfo(out coordsPicture, out Rotation iRotation);
-            switch (iMode)
+            //Check if there are any pictures left
+            if (!string.IsNullOrEmpty(sFilePath))
             {
-                case GameMode.Normal:
-                    //Set the new image
-                    SetImage(sFilePath, iRotation);
+                //Get the GPS information and check if it exists
+                bool bInfo = IPictureManager.Instance.GetImageInfo(out coordsPicture, out Rotation iRotation);
+                switch (iMode)
+                {
+                    case GameMode.Normal:
+                        //Set the new image
+                        SetImage(sFilePath, iRotation);
 
-                    //Check if the GPS information has been found
-                    if (!bInfo)
-                    {
-                        //Ask if the user wants to add the information
-                        MessageBoxResult iResult = MessageBox.Show(Properties.Resources.Main_textSetInfoGPS, "JapanGuessr", MessageBoxButton.YesNo);
-                        switch (iResult)
+                        //Check if the GPS information has been found
+                        if (!bInfo)
                         {
-                            case MessageBoxResult.Yes:
-                                //Set the coordinates selection flag
-                                bSaveCoords = true;
-                                break;
-                            case MessageBoxResult.No:
-                                //Set a new picture
-                                UpdatePicture();
-                                break;
+                            //Ask if the user wants to add the information
+                            MessageBoxResult iResult = MessageBox.Show(Properties.Resources.Main_textSetInfoGPS, "JapanGuessr", MessageBoxButton.YesNo);
+                            switch (iResult)
+                            {
+                                case MessageBoxResult.Yes:
+                                    //Set the coordinates selection flag
+                                    bSaveCoords = true;
+                                    break;
+                                case MessageBoxResult.No:
+                                    //Set a new picture
+                                    UpdatePicture();
+                                    break;
+                            }
                         }
-                    }
-                    break;
-                case GameMode.OnlyGPS:
-                    //Check if the GPS information has been found
-                    if (bInfo)
-                    {
-                        //Set the new image
-                        SetImage(sFilePath, iRotation);
-                    }
-                    else
-                    {
-                        //Try with a new picture
-                        UpdatePicture();
-                    }
-                    break;
-                case GameMode.AddGPS:
-                    //Check if the GPS information has been found
-                    if (bInfo)
-                    {
-                        //Try with a new picture
-                        UpdatePicture();
-                    }
-                    else
-                    {
-                        //Set the new image
-                        SetImage(sFilePath, iRotation);
-                    }
-                    break;
+                        break;
+                    case GameMode.OnlyGPS:
+                        //Check if the GPS information has been found
+                        if (bInfo)
+                        {
+                            //Set the new image
+                            SetImage(sFilePath, iRotation);
+                        }
+                        else
+                        {
+                            //Try with a new picture
+                            UpdatePicture();
+                        }
+                        break;
+                    case GameMode.AddGPS:
+                        //Check if the GPS information has been found
+                        if (bInfo)
+                        {
+                            //Try with a new picture
+                            UpdatePicture();
+                        }
+                        else
+                        {
+                            //Set the new image
+                            SetImage(sFilePath, iRotation);
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                //Show the no pictures left dialog
+                MessageBox.Show(Properties.Resources.Main_textNoPicturesLeft, "JapanGuessr", MessageBoxButton.OK);
+
+                //Return to the start panel
+                ReturnToStartEvent?.Invoke();
             }
         }
 
@@ -237,45 +253,63 @@ namespace JapanGuessr
         */
         private void ButtonSelect_Click(object sender, RoutedEventArgs e)
         {
-            //Check the selected game mode
-            double dDistance;
-            switch (iMode)
+            //Check if a location has been selected
+            if (mapPicture.Children.Count == 1)
             {
-                case GameMode.Normal:
-                    //Check if the coordinates must be saved
-                    if (bSaveCoords)
-                    {
-                        //TODO: Save the coordinates
+                //Check the selected game mode
+                double dDistance;
+                switch (iMode)
+                {
+                    case GameMode.Normal:
+                        //Check if the coordinates must be saved
+                        if (bSaveCoords)
+                        {
+                            //TODO: Save the coordinates
 
-                        //Reset the save coordinates flag
-                        bSaveCoords = false;
-                    }
-                    else
-                    {
+                            //Reset the save coordinates flag
+                            bSaveCoords = false;
+                        }
+                        else
+                        {
+                            //Get the distance between the picture location and the selected point
+                            dDistance = coordsPicture.GetDistanceTo(coordsSelected);
+
+                            //Show the distance to the target
+                            ShowDistance(dDistance);
+                        }
+                        break;
+                    case GameMode.OnlyGPS:
                         //Get the distance between the picture location and the selected point
                         dDistance = coordsPicture.GetDistanceTo(coordsSelected);
 
                         //Show the distance to the target
                         ShowDistance(dDistance);
-                    }
-                    break;
-                case GameMode.OnlyGPS:
-                    //Get the distance between the picture location and the selected point
-                    dDistance = coordsPicture.GetDistanceTo(coordsSelected);
+                        break;
+                    case GameMode.AddGPS:
+                        //TODO: Save the coordinates
+                        break;
+                }
 
-                    //Show the distance to the target
-                    ShowDistance(dDistance);
-                    break;
-                case GameMode.AddGPS:
-                    //TODO: Save the coordinates
-                    break;
+                //Clear all map childrens
+                mapPicture.Children.Clear();
+
+                //Update the picture
+                UpdatePicture();
             }
+            else
+            {
+                //Show the select location first dialog
+                MessageBox.Show(Properties.Resources.Main_textSelectLocation, "JapanGuessr", MessageBoxButton.OK);
+            }
+        }
 
-            //Clear all map childrens
-            mapPicture.Children.Clear();
 
-            //Update the picture
-            UpdatePicture();
+        /*
+        Button start click event handler
+        */
+        private void ButtonStart_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
         /*
@@ -315,6 +349,9 @@ namespace JapanGuessr
                     //Check if the mouse has not moved too much
                     if (iMoveCount < 3)
                     {
+                        //Clear the map children
+                        mapPicture.Children.Clear();
+
                         //Get the current location
                         Location location = mapPicture.ViewportPointToLocation(e.GetPosition(mapPicture));
 

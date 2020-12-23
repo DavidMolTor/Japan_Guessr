@@ -56,9 +56,8 @@ namespace JapanGuessr
             }
         }
 
-        //Pictures found variable
-        private string[] sPictures  = null;
-        public bool bDirectorySet   = false;
+        //Pictures list object
+        private List<string> listPictures  = null;
 
         //Selected picture variable
         private string sCurrentFilePath = "";
@@ -66,7 +65,7 @@ namespace JapanGuessr
         /*
         Sets the pictures found in the selected directory
         */
-        public void FindPictures(string sSearchPath)
+        public bool FindPictures(string sSearchPath)
         {
             //Check if the selected folder exists
             if (Directory.Exists(sSearchPath))
@@ -84,13 +83,14 @@ namespace JapanGuessr
                 }
 
                 //Set the pictures array
-                sPictures = sFilesFound.ToArray();
-                bDirectorySet = true;
+                listPictures    = sFilesFound;
+                return true;
             }
             else
             {
                 //Show the directory not found dialog
                 MessageBox.Show(Properties.Resources.Main_textDirectoryError, "JapanGuessr", MessageBoxButton.OK);
+                return false;
             }
         }
 
@@ -99,15 +99,26 @@ namespace JapanGuessr
         */
         public string GetRandomPicture()
         {
-            //Generate a random number from the image count
-            Random rand = new Random();
-            int iRandom = rand.Next(sPictures.Length);
+            //Check if there are any pictures left
+            if (listPictures.Count > 0)
+            {
+                //Remove the previous picture from the list
+                listPictures.Remove(sCurrentFilePath);
 
-            //Set the picture file path
-            sCurrentFilePath = sPictures[iRandom];
+                //Generate a random number from the image count
+                Random rand = new Random();
+                int iRandom = rand.Next(listPictures.Count);
 
-            //Return the selected picture
-            return sCurrentFilePath;
+                //Set the picture file path
+                sCurrentFilePath = listPictures[iRandom];
+
+                //Return the selected picture
+                return sCurrentFilePath;
+            }
+            else
+            {
+                return "";
+            }
         }
 
         /*
