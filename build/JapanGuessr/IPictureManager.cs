@@ -13,12 +13,12 @@ Property of Skeptic Productions
 
 using System;
 using System.IO;
+using System.Text;
 using System.Windows;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Device.Location;
 using System.Collections.Generic;
-
-//Exif libraries
-using ExifLib;
 
 namespace JapanGuessr
 {
@@ -126,26 +126,26 @@ namespace JapanGuessr
         */
         public bool GetImageInfo(out GeoCoordinate coords, out Rotation iRotation)
         {
-            //Initialize the EXIF reader
-            ExifReader exifReader = new ExifReader(sCurrentFilePath);
-
-            //Try getting the GPS information
-            bool bLatitudeOK        = exifReader.GetTagValue(ExifTags.GPSLatitude, out double[] dLatitudeRaw);
-            bool bLatitudeRefOK     = exifReader.GetTagValue(ExifTags.GPSLatitudeRef, out string sLatitudeRef);
-            bool bLongitudeOK       = exifReader.GetTagValue(ExifTags.GPSLongitude, out double[] dLongitudeRaw);
-            bool bLongitudeRefOK    = exifReader.GetTagValue(ExifTags.GPSLongitudeRef, out string sLongitudeRef);
+            //Initialize a image object from the current file path
+            Image image = new Bitmap(sCurrentFilePath);
 
             //Try getting the orientation information
-            if (exifReader.GetTagValue(ExifTags.Orientation, out ushort iOrientation))
+            try
             {
+                //Get the orientation information
+                PropertyItem itemOrientation = image.GetPropertyItem(274);
+                uint iOrientation = BitConverter.ToUInt16(itemOrientation.Value, 0);
                 switch (iOrientation)
                 {
+                    case 5:
                     case 6:
                         iRotation = Rotation.Right;
                         break;
                     case 3:
+                    case 4:
                         iRotation = Rotation.Full;
                         break;
+                    case 7:
                     case 8:
                         iRotation = Rotation.Left;
                         break;
@@ -154,19 +154,14 @@ namespace JapanGuessr
                         break;
                 }
             }
-            else
+            catch (ArgumentException)
             {
                 iRotation = Rotation.None;
             }
 
             //Check if there is any GPS information
-            if (bLatitudeOK && bLatitudeRefOK && bLongitudeOK && bLongitudeRefOK)
+            if (GetInfoGPS(image, out double dLatitude, out double dLongitude))
             {
-
-                //Set the coordinates as sinlge double format
-                double dLatitude    = (dLatitudeRaw[0] + dLatitudeRaw[1] / 60 + dLatitudeRaw[2] / 3600) * (sLatitudeRef == "S" ? -1 : 1);
-                double dLongitude   = (dLongitudeRaw[0] + dLongitudeRaw[1] / 60 + dLongitudeRaw[2] / 3600) * (sLongitudeRef == "W" ? -1 : 1);
-
                 coords = new GeoCoordinate(dLatitude, dLongitude);
                 return true;
             }
@@ -175,6 +170,64 @@ namespace JapanGuessr
                 coords = null;
                 return false;
             }
+        }
+
+        /*
+        Retrieves the GPS information from the given image
+        */
+        public bool GetInfoGPS(Image image, out double dLatitude, out double dLongitude)
+        {
+            try
+            {
+                //Get the GPS latitude reference and value
+                PropertyItem itemLatitude       = image.GetPropertyItem(2);
+                PropertyItem itemLatitudeRef    = image.GetPropertyItem(1);
+                dLatitude = ConvertCoordinate(itemLatitude, itemLatitudeRef);
+
+                //Get the GPS longitude reference and value
+                PropertyItem itemLongitude      = image.GetPropertyItem(4);
+                PropertyItem itemLongitudeRef   = image.GetPropertyItem(3);
+                dLongitude = ConvertCoordinate(itemLongitude, itemLongitudeRef);
+
+                return true;
+            }
+            catch (ArgumentException)
+            {
+                dLatitude   = double.NaN;
+                dLongitude  = double.NaN;
+                return false;
+            }
+        }
+
+        /*
+        Converts the GPS information to single values with sign
+        */
+        private double ConvertCoordinate(PropertyItem itemValue, PropertyItem itemRef)
+        {
+            //Initialize the numerator and denominator variables
+            uint iNumerator;
+            uint iDenominator;
+
+            //Get the degrees value from the numerator and denominator
+            iNumerator      = BitConverter.ToUInt32(itemValue.Value, 0);
+            iDenominator    = BitConverter.ToUInt32(itemValue.Value, 4);
+            double dDegrees = iNumerator / (double)iDenominator;
+
+            //Get the minutes value from the numerator and denominator
+            iNumerator      = BitConverter.ToUInt32(itemValue.Value, 8);
+            iDenominator    = BitConverter.ToUInt32(itemValue.Value, 12);
+            double dMinutes = iNumerator / (double)iDenominator;
+
+            //Get the seconds value from the numerator and denominator
+            iNumerator      = BitConverter.ToUInt32(itemValue.Value, 16);
+            iDenominator    = BitConverter.ToUInt32(itemValue.Value, 20);
+            double dSeconds = iNumerator / (double)iDenominator;
+
+            //Get the cardinal reference value
+            string sReference = Encoding.ASCII.GetString(new byte[1] { itemRef.Value[0] });
+
+            //Returnt he coordinate value
+            return (dDegrees + (dMinutes / 60) + (dSeconds / 3600)) * ((sReference == "W" || sReference == "S") ? -1 : 1);
         }
     }
 
