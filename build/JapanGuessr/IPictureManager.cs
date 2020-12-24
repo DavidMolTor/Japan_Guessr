@@ -99,12 +99,13 @@ namespace JapanGuessr
         */
         public string GetRandomPicture()
         {
+            //Remove the previous picture from the list
+            listPictures.Remove(sCurrentFilePath);
+            sCurrentFilePath = "";
+
             //Check if there are any pictures left
             if (listPictures.Count > 0)
             {
-                //Remove the previous picture from the list
-                listPictures.Remove(sCurrentFilePath);
-
                 //Generate a random number from the image count
                 Random rand = new Random();
                 int iRandom = rand.Next(listPictures.Count);
@@ -126,83 +127,157 @@ namespace JapanGuessr
         */
         public bool GetImageInfo(out GeoCoordinate coords, out Rotation iRotation)
         {
-            //Initialize a image object from the current file path
-            Image image = new Bitmap(sCurrentFilePath);
-
-            //Try getting the orientation information
-            try
+            //Initialize an image object from the current file path
+            using (Image image = new Bitmap(sCurrentFilePath))
             {
-                //Get the orientation information
-                PropertyItem itemOrientation = image.GetPropertyItem(274);
-                uint iOrientation = BitConverter.ToUInt16(itemOrientation.Value, 0);
-                switch (iOrientation)
+                //Try getting the orientation information
+                try
                 {
-                    case 5:
-                    case 6:
-                        iRotation = Rotation.Right;
-                        break;
-                    case 3:
-                    case 4:
-                        iRotation = Rotation.Full;
-                        break;
-                    case 7:
-                    case 8:
-                        iRotation = Rotation.Left;
-                        break;
-                    default:
-                        iRotation = Rotation.None;
-                        break;
+                    //Get the orientation information
+                    PropertyItem itemOrientation = image.GetPropertyItem(274);
+                    uint iOrientation = BitConverter.ToUInt16(itemOrientation.Value, 0);
+                    switch (iOrientation)
+                    {
+                        case 5:
+                        case 6:
+                            iRotation = Rotation.Right;
+                            break;
+                        case 3:
+                        case 4:
+                            iRotation = Rotation.Full;
+                            break;
+                        case 7:
+                        case 8:
+                            iRotation = Rotation.Left;
+                            break;
+                        default:
+                            iRotation = Rotation.None;
+                            break;
+                    }
                 }
-            }
-            catch (ArgumentException)
-            {
-                iRotation = Rotation.None;
-            }
+                catch (ArgumentException)
+                {
+                    iRotation = Rotation.None;
+                }
 
-            //Check if there is any GPS information
-            if (GetInfoGPS(image, out double dLatitude, out double dLongitude))
-            {
-                coords = new GeoCoordinate(dLatitude, dLongitude);
-                return true;
-            }
-            else
-            {
-                coords = null;
-                return false;
+                //Check if there is any GPS information
+                if (GetInfoGPS(out double dLatitude, out double dLongitude))
+                {
+                    //Set the new coordinates
+                    coords = new GeoCoordinate(dLatitude, dLongitude);
+
+                    return true;
+                }
+                else
+                {
+                    //Set the coordinates to null
+                    coords = null;
+
+                    return false;
+                }
             }
         }
 
         /*
         Retrieves the GPS information from the given image
         */
-        public bool GetInfoGPS(Image image, out double dLatitude, out double dLongitude)
+        public bool GetInfoGPS(out double dLatitude, out double dLongitude)
+        {
+            //Initialize an image object from the current file path
+            using (Image image = new Bitmap(sCurrentFilePath))
+            {
+                try
+                {
+                    //Get the GPS latitude reference and value items
+                    PropertyItem itemLatitude = image.GetPropertyItem(2);
+                    PropertyItem itemLatitudeRef = image.GetPropertyItem(1);
+                    dLatitude = CoordinateToValue(itemLatitude, itemLatitudeRef);
+
+                    //Get the GPS longitude reference and value items
+                    PropertyItem itemLongitude = image.GetPropertyItem(4);
+                    PropertyItem itemLongitudeRef = image.GetPropertyItem(3);
+                    dLongitude = CoordinateToValue(itemLongitude, itemLongitudeRef);
+
+                    return true;
+                }
+                catch (ArgumentException)
+                {
+                    dLatitude = double.NaN;
+                    dLongitude = double.NaN;
+                    return false;
+                }
+            }
+        }
+
+        /*
+        Sets the selected GPS information for the current image
+        */
+        public bool SetInfoGPS(double dLatitude, double dLongitude)
         {
             try
             {
-                //Get the GPS latitude reference and value
-                PropertyItem itemLatitude       = image.GetPropertyItem(2);
-                PropertyItem itemLatitudeRef    = image.GetPropertyItem(1);
-                dLatitude = ConvertCoordinate(itemLatitude, itemLatitudeRef);
+                //Copy the original image
+                string sTmpFilePath = sCurrentFilePath.Substring(0, sCurrentFilePath.LastIndexOf('.')) + "_tmp" + sCurrentFilePath.Substring(sCurrentFilePath.LastIndexOf('.'));
+                File.Copy(sCurrentFilePath, sTmpFilePath);
 
-                //Get the GPS longitude reference and value
-                PropertyItem itemLongitude      = image.GetPropertyItem(4);
-                PropertyItem itemLongitudeRef   = image.GetPropertyItem(3);
-                dLongitude = ConvertCoordinate(itemLongitude, itemLongitudeRef);
+                //Initialize an image object with the current selected path
+                using (Image image = new Bitmap(sTmpFilePath))
+                {
+                    //Set the GPS version identifier field
+                    SetProperty(image, 0, 1, new byte[] { 2, 3, 0, 0 });
+
+                    //Set the latitude property value
+                    SetProperty(image, 2, 5, CoordinateToRational(Math.Abs(dLatitude)));
+
+                    //Set the latitude reference property value
+                    char cLatitudeRef = dLatitude < 0 ? 'S' : 'N';
+                    SetProperty(image, 1, 2, new byte[] { (byte)cLatitudeRef, 0 });
+
+                    //Set the longitude property value
+                    SetProperty(image, 4, 5, CoordinateToRational(Math.Abs(dLongitude)));
+
+                    //Set the longitude reference property value
+                    char cLongitudeRef = dLongitude < 0 ? 'W' : 'E';
+                    SetProperty(image, 3, 2, new byte[] { (byte)cLongitudeRef, 0 });
+
+                    //Delete the local copy of the image
+                    File.Delete(sCurrentFilePath);
+
+                    //Save the image with the new information
+                    image.Save(sCurrentFilePath);
+                }
+
+                //Delete the temporary image
+                File.Delete(sTmpFilePath);
 
                 return true;
             }
             catch (ArgumentException)
             {
-                dLatitude   = double.NaN;
-                dLongitude  = double.NaN;
                 return false;
             }
         }
 
         /*
-        Converts the GPS information to single values with sign
+        Sets a property item from the given parameters
         */
-        private double ConvertCoordinate(PropertyItem itemValue, PropertyItem itemRef)
+        private void SetProperty(Image image, int iID, short shortType, byte[] byteValue)
+        {
+            //Initialize the property item with the given values
+            PropertyItem item   = image.PropertyItems[0];
+            item.Id             = iID;
+            item.Type           = shortType;
+            item.Len            = byteValue.Length;
+            item.Value          = byteValue;
+
+            //Set the image property
+            image.SetPropertyItem(item);
+        }
+
+        /*
+        Converts the given GPS coordinate to single values with sign
+        */
+        private double CoordinateToValue(PropertyItem itemValue, PropertyItem itemRef)
         {
             //Initialize the numerator and denominator variables
             uint iNumerator;
@@ -229,12 +304,46 @@ namespace JapanGuessr
             //Returnt he coordinate value
             return (dDegrees + (dMinutes / 60) + (dSeconds / 3600)) * ((sReference == "W" || sReference == "S") ? -1 : 1);
         }
+
+        /*
+        Converts the given GPS coordinate to rational value without sign
+        */
+        private byte[] CoordinateToRational(double dCoordinate)
+        {
+            //Get the degrees value
+            int iDegrees = (int)Math.Floor(dCoordinate);
+            dCoordinate = (dCoordinate - iDegrees) * 60;
+
+            //Get the minutes value
+            int iMinutes = (int)Math.Floor(dCoordinate);
+            dCoordinate = (dCoordinate - iMinutes) * 60 * 100;
+
+            //Get the seconds value
+            int iSeconds = (int)Math.Round(dCoordinate);
+
+            //Initialize the rational array
+            byte[] bytes = new byte[3 * 2 * 4];
+
+            //Set the degrees array value
+            Array.Copy(BitConverter.GetBytes(iDegrees), 0, bytes, 0, 4);
+            Array.Copy(BitConverter.GetBytes(1), 0, bytes, 4, 4);
+
+            //Set the minutes array value
+            Array.Copy(BitConverter.GetBytes(iMinutes), 0, bytes, 8, 4);
+            Array.Copy(BitConverter.GetBytes(1), 0, bytes, 12, 4);
+
+            //Set the seconds array value
+            Array.Copy(BitConverter.GetBytes(iSeconds), 0, bytes, 16, 4);
+            Array.Copy(BitConverter.GetBytes(100), 0, bytes, 20, 4);
+
+            return bytes;
+        }
     }
 
     /*
     Rotation enumeration
     */
-    public enum Rotation
+        public enum Rotation
     {
         None    = 0,
         Left    = 1,

@@ -109,6 +109,9 @@ namespace JapanGuessr
             //Set the game mode
             iMode = iSelectedMode;
 
+            //Set the default picture
+            imgPicture.Source = new BitmapImage(new Uri("Resources/default.png", UriKind.Relative));
+
             //Set the first picture
             UpdatePicture();
         }
@@ -206,7 +209,8 @@ namespace JapanGuessr
 
             //Set the bitmap source
             bitmap.BeginInit();
-            bitmap.UriSource = new Uri(sFilePath, UriKind.Relative);
+            bitmap.UriSource    = new Uri(sFilePath, UriKind.Relative);
+            bitmap.CacheOption  = BitmapCacheOption.OnLoad;
 
             //Release the bitmap for it to be accessed
             bitmap.EndInit();
@@ -215,7 +219,7 @@ namespace JapanGuessr
             //Initialize a transformed bitmap for rotation
             TransformedBitmap transBitmap = new TransformedBitmap();
             transBitmap.BeginInit();
-            transBitmap.Source = bitmap;
+            transBitmap.Source = bitmap.Clone();
 
             //Set the orientation of the transformed bitmap
             switch (iRotation)
@@ -245,7 +249,7 @@ namespace JapanGuessr
             mapPicture.Visibility = Visibility.Visible;
 
             //Set the new image
-            imgPicture.Source = transBitmap;
+            imgPicture.Source = transBitmap.Clone();
         }
 
         /*
@@ -264,7 +268,8 @@ namespace JapanGuessr
                         //Check if the coordinates must be saved
                         if (bSaveCoords)
                         {
-                            //TODO: Save the coordinates
+                            //Save the coordinates for the current image
+                            IPictureManager.Instance.SetInfoGPS(coordsSelected.Latitude, coordsSelected.Longitude);
 
                             //Reset the save coordinates flag
                             bSaveCoords = false;
@@ -286,7 +291,8 @@ namespace JapanGuessr
                         ShowDistance(dDistance);
                         break;
                     case GameMode.AddGPS:
-                        //TODO: Save the coordinates
+                        //Save the coordinates for the current image
+                        IPictureManager.Instance.SetInfoGPS(coordsSelected.Latitude, coordsSelected.Longitude);
                         break;
                 }
 
@@ -309,7 +315,8 @@ namespace JapanGuessr
         */
         private void ButtonStart_Click(object sender, RoutedEventArgs e)
         {
-
+            //Return to the start panel
+            ReturnToStartEvent?.Invoke();
         }
 
         /*

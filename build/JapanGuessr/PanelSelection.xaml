@@ -66,7 +66,7 @@
                 <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="SELECCIONAR" FontSize="24" Margin="0" FontFamily="Orbitron" Foreground="Gainsboro" />
             </Grid>
         </Button>
-        <Button x:Name="buttonStart" Style="{StaticResource HoverButton}" Width="240" Foreground="White" Height="70" Click="ButtonStart_Click" RenderTransformOrigin="0.5,0.5" Background="#00000000" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,300,40" IsEnabled="False">
+        <Button x:Name="buttonStart" Style="{StaticResource HoverButton}" Width="240" Foreground="White" Height="70" Click="ButtonStart_Click" RenderTransformOrigin="0.5,0.5" Background="#00000000" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,300,40">
             <Grid Background="#FF323232" Width="240" Height="70">
                 <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="INICIO" FontSize="24" Margin="0" FontFamily="Orbitron" Foreground="Gainsboro" />
             </Grid>
