@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:JapanGuessr"
         mc:Ignorable="d"
         ResizeMode="CanMinimize"
-        Title="JapanGuessr" Height="839" Width="1216">
+        Title="JapanGuessr" Height="839" Width="1216" WindowStartupLocation="CenterScreen">
     <Grid>
         <local:PanelStartMenu x:Name="panelStartMenu" Visibility="Visible" />
         <local:PanelSelection x:Name="panelSelection" Visibility="Hidden" />

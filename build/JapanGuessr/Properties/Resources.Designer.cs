@@ -100,6 +100,16 @@ namespace JapanGuessr.Properties {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a No hay ninguna ubicación seleccionada.
+        ///¿Quieres pasar a la siguiente imagen sin añadir informació a la actual?.
+        /// </summary>
+        internal static string Main_textNextPicture {
+            get {
+                return ResourceManager.GetString("Main_textNextPicture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a No quedan imágenes en la carpeta actual por procesar.
         ///Vuelva a iniciar el juego en el modo deseado..
         /// </summary>

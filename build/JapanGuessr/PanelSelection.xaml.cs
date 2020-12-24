@@ -153,6 +153,9 @@ namespace JapanGuessr
                                 case MessageBoxResult.Yes:
                                     //Set the coordinates selection flag
                                     bSaveCoords = true;
+
+                                    //Enable the selection button
+                                    buttonSelect.IsEnabled = true;
                                     break;
                                 case MessageBoxResult.No:
                                     //Set a new picture
@@ -185,6 +188,9 @@ namespace JapanGuessr
                         {
                             //Set the new image
                             SetImage(sFilePath, iRotation);
+
+                            //Enable the selection button
+                            buttonSelect.IsEnabled = true;
                         }
                         break;
                 }
@@ -304,8 +310,21 @@ namespace JapanGuessr
             }
             else
             {
-                //Show the select location first dialog
-                MessageBox.Show(Properties.Resources.Main_textSelectLocation, "JapanGuessr", MessageBoxButton.OK);
+                //Check the current game mode
+                if (iMode == GameMode.AddGPS || (iMode == GameMode.Normal && bSaveCoords))
+                {
+                    //Show the next picture dialog
+                    if (MessageBox.Show(Properties.Resources.Main_textNextPicture, "JapanGuessr", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                    {
+                        //Show the next picture
+                        UpdatePicture();
+                    }
+                }
+                else
+                {
+                    //Show the select location first dialog
+                    MessageBox.Show(Properties.Resources.Main_textSelectLocation, "JapanGuessr", MessageBoxButton.OK);
+                }
             }
         }
 
