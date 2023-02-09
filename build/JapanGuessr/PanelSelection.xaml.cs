@@ -264,7 +264,7 @@ namespace JapanGuessr
         private void ButtonSelect_Click(object sender, RoutedEventArgs e)
         {
             //Check if a location has been selected
-            if (mapPicture.Children.Count == 1)
+            if (mapPicture.Children.Count == 2)
             {
                 //Check the selected game mode
                 double dDistance;
@@ -304,6 +304,14 @@ namespace JapanGuessr
 
                 //Clear all map childrens
                 mapPicture.Children.Clear();
+
+                //Add a border to the map
+                Border border = new Border()
+                {
+                    BorderThickness = new Thickness(2),
+                    BorderBrush     = new SolidColorBrush(Color.FromRgb(70, 70, 70))
+                };
+                mapPicture.Children.Add(border);
 
                 //Update the picture
                 UpdatePicture();
@@ -377,6 +385,14 @@ namespace JapanGuessr
                     {
                         //Clear the map children
                         mapPicture.Children.Clear();
+
+                        //Add a border to the map
+                        Border border = new Border()
+                        {
+                            BorderThickness = new Thickness(2),
+                            BorderBrush     = new SolidColorBrush(Color.FromRgb(70, 70, 70))
+                        };
+                        mapPicture.Children.Add(border);
 
                         //Get the current location
                         Location location = mapPicture.ViewportPointToLocation(e.GetPosition(mapPicture));
